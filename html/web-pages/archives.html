@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CipherSafe</title>
+  <link rel="icon" href="../ASSETS/FAVICON.ICO">
+  <style>
+    :root {
+      --font-family: 'Roboto', sans-serif;
+      --body-bg-color: #1e1e2f;
+      --container-bg: #2e2e3e;
+      --input-bg: #3a3a4a;
+      --input-placeholder: #b0b0c2;
+      --btn-primary: #5c6ac4;
+      --btn-primary-hover: #4b55a8;
+      --btn-accent: #28a745;
+      --btn-accent-hover: #218838;
+      --text-light: #f1f1f7;
+      --text-muted: #a0a0b2;
+      --toggle-bg: linear-gradient(135deg, #5c6ac4, #28a745);
+      --toggle-hover-bg: linear-gradient(135deg, #4b55a8, #218838);
+      --radius: 12px;
+      --transition: 0.3s ease;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
+    }
+    body {
+      background: var(--body-bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative;
+      color: var(--text-light);
+    }
+    .container {
+      background: var(--container-bg);
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      max-width: 360px;
+      width: 80%;
+      text-align: center;
+    }
+    .title {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+    }
+    .text-muted {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    a {
+      color: var(--btn-primary);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    a:hover {
+      color: var(--btn-primary-hover);
+      text-decoration: underline;
+    }
+    form {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .form-control {
+      width: 100%;
+      background: var(--input-bg);
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      color: var(--text-light);
+      font-size: 1rem;
+      transition: background var(--transition);
+    }
+    .form-control::placeholder {
+      color: var(--input-placeholder);
+    }
+    .form-control:focus {
+      outline: 2px solid var(--btn-primary);
+      background: var(--container-bg);
+    }
+    .btn-submit {
+      background: var(--btn-accent);
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.75rem;
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition);
+      font-size: 1rem;
+    }
+    .btn-submit:hover {
+      background: var(--btn-accent-hover);
+    }
+    #themes {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      background: var(--toggle-bg);
+      padding: 0.5rem;
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    #themes:hover {
+      background: var(--toggle-hover-bg);
+      transform: scale(1.1);
+    }
+    #themes img {
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
+    #addOptionBtn {
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+      width: 50px;
+      height: 50px;
+      font-size: 2rem;
+      border-radius: var(--radius);
+      background-color: var(--btn-accent);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      align-self: flex-end;
+    }
+    #addOptionBtn:hover {
+      background-color: var(--btn-accent-hover);
+    } 
+    .archives{
+      display: flex;
+      justify-content: space-between;
+    }
+    #sign_out{
+      width: 50px;
+      height: 50px;
+      background: var(--btn-accent);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 30px;
+      color: white;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .side-buttons {
+      width: 100%;
+      display: flex;
+      justify-content: space-evenly;
+      margin-top: 1rem;
+      align-items: center;
+    }
+    .side-buttons button {
+      width: 50px;
+      height: 50px;
+      background: var(--btn-accent);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 2rem;
+      color: white;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .side-buttons div{
+      font-size: 1.5rem;
+    }
+    .side-buttons button:hover {
+      background: var(--btn-accent-hover);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="title">HI <span id="username"></span></h2>
+    <form id="myForm" autocomplete="off" method="post">
+      <div class="archives">
+        <select type="text" name="archive" class="form-control" required >
+          <option value="" disabled selected hidden>Archives...</option>
+        </select>
+      </div>
+      <input type="password" name="password" class="form-control" placeholder="Password" required>
+      <button type="submit" class="btn-submit" id="btn-submit">Select</button>
+    </form>
+    <div class="side-buttons">
+      <button title="Sign Out" type="button" id="sign_out">&#x23CF;</button>
+      <button id="addOptionBtn" type="button" title="Aggiungi">+</button>
+      <button title="Delete" type="button" id="delete_button">&#128465;</button>
+    </div>
+  </div>
+
+  <div id="themes">
+    <img src="../ASSETS/MOON.SVG" id="moon" alt="Dark Mode">
+    <img src="../ASSETS/SUN.SVG" id="sun" alt="Light Mode" style="display:none;">
+  </div>
+
+  <script>
+  
+    
+    let data_json = {};
+    const themesToggle = document.getElementById('themes');
+    const moonIcon = document.getElementById('moon');
+    const sunIcon = document.getElementById('sun');
+    themesToggle.addEventListener('click', () => {
+      const dark = document.body.classList.toggle('light-mode');
+      moonIcon.style.display = dark ? 'none' : 'block';
+      sunIcon.style.display = dark ? 'block' : 'none';
+      document.documentElement.style.setProperty('--body-bg-color', dark ? '#f5f5f5' : '#1e1e2f');
+      document.documentElement.style.setProperty('--container-bg', dark ? '#ffffff' : '#2e2e3e');
+      document.documentElement.style.setProperty('--input-bg', dark ? '#eaeaea' : '#3a3a4a');
+      document.documentElement.style.setProperty('--text-light', dark ? '#333333' : '#f1f1f7');
+      document.documentElement.style.setProperty('--btn-primary', dark ? '#4b55a8' : '#5c6ac4');
+    });
+
+    document.getElementById("addOptionBtn").addEventListener("click",()=>{
+      window.location.href = "/WEB-PA~1/NEW_AR~1.HTM";
+    });
+
+    function fetchJSONData() {
+      return fetch('/CIPHER~1/FILE~1.JSO')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.text();  // leggo come testo grezzo
+        })
+        .then(text => {
+          if (!text) {
+            // file vuoto: restituisco un oggetto di default
+            return { archives: [] };
+          }
+          return JSON.parse(text);  // evito il fallimento di response.json()
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (sessionStorage.getItem('Username')) {
+        document.getElementById("username").textContent = sessionStorage.getItem('Username');
+        console.log("ciao "+sessionStorage.getItem('Username'));
+        let select = document.querySelector("select");
+        try {
+          fetchJSONData()
+            .then(data => {
+            data.archives.forEach(item => {
+              if(sessionStorage.getItem('Username') == item.author){
+                let option = document.createElement("option");
+                option.value = item.archive;
+                option.textContent= item.archive;
+                select.appendChild(option);
+              }
+            });
+          })
+          .catch(err => {
+            // qui gestisci eventuali errori di fetch o parsing
+            console.log("errore");
+          });         
+          } catch (e) {
+            console.error('Impossibile caricare JSON:', e);
+          }
+        } else {
+          console.warn("Nessun dato di login trovato");
+      }
+    });
+
+    document.getElementById("myForm").addEventListener("submit",async function(event) {
+      event.preventDefault();  
+      const form = document.querySelector("form");
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      const archive = form.elements["archive"].value;
+      if (!archive) {
+        alert("fill all the fields");
+        return; 
+      }
+
+      const password = form.elements["password"].value;
+      if (!password) {
+        alert("fill all the fields");
+        return; 
+      }
+
+      data_json = {
+        ...data,
+        author: sessionStorage.getItem('Username')
+      };
+  
+      try {
+        const resp = await fetch("/load_file", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify(data_json)
+        });
+        const json = await resp.json();
+        if (json.status !== "ok") {
+          alert("Error: Check what you insert");
+        }else{
+          sessionStorage.setItem('Archive', data_json.archive);
+          sessionStorage.setItem('Password', data_json.password);
+          window.location.href = "/WEB-PA~1/FILE~1.HTM";
+        }
+         
+      } catch (err) {
+        alert("Errore di rete: " + err.message);
+      }
+    });
+
+    document.getElementById("sign_out").addEventListener("click",()=>{
+      sessionStorage.removeItem('Username');
+      window.location.href = "/WEB-PA~1/SIGN-I~1.HTM";
+    });
+
+    document.getElementById("delete_button").addEventListener("click",async ()=>{
+      const check = window.confirm(`Sei sicuro di voler eliminare l'account di "${sessionStorage.getItem('Username')}"?`);
+      if (!check) {
+        return; 
+      }
+      try {
+        const response = await fetch("/delete_account", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({username:sessionStorage.getItem('Username')})
+        });
+        const json = await response.json();
+        if (json.status === "ok") {
+          alert(`l'account di ${sessionStorage.getItem('Username')} è stato eliminato!`);
+          window.location.href = "/INDEX~1.HTM";
+        } else {
+          alert("delete fallita: ");
+        }
+      } catch (err) {
+        alert("Errore di rete: " + err.message);
+      }
+    })
+
+  </script>
+</body>
+</html>

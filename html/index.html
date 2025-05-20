@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CipherSafe</title>
+  <link rel="icon" href="ASSETS/FAVICON.ICO">
+  <style>
+    /* Theme Variables */
+    :root {
+      --font: 'Roboto', sans-serif;
+      --bg: #1f2128;
+      --card: #2b2e35;
+      --primary: #28a745;
+      --primary-hover: #218838;
+      --accent: #28a745;
+      --accent-hover: #218838;
+      --text: #ececec;
+      --muted: #a3a3a3;
+      --transition: 0.3s;
+      --toggle-bg: linear-gradient(135deg, #5c6ac4, #28a745);
+      --toggle-hover-bg: linear-gradient(135deg, #4b55a8, #218838);
+    }
+    /* Reset & Base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Main Container */
+    .container {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 360px;
+      width: 80%;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      animation: fadeIn 0.6s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px);} to { opacity:1; transform: translateY(0);} }
+    .logo {
+      margin-bottom: 0.2rem;
+    }
+    .logo img { 
+      width: 250px; 
+      height: 200px; 
+      /* if you want it slightly larger: width: 80px; height: 80px; */
+    }
+    .sub {
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    /* Buttons Row */
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background var(--transition), transform var(--transition);
+      cursor: pointer;
+    }
+    .btn img { margin-bottom: 0.5rem; filter: invert(1); }
+    .btn:hover { background: var(--primary-hover); transform: translateY(-3px); }
+    /* Theme Toggle */
+    #themes {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      background: var(--toggle-bg);
+      padding: 0.5rem;
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    #themes:hover {
+      background: var(--toggle-hover-bg);
+      transform: scale(1.1);
+    }
+    #themes img {
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <!-- Updated logo to the lock/shield PNG -->
+    <div class="logo">
+      <img src="ASSETS/LOGO.PNG" alt="CipherSafe Logo">
+    </div>
+    <div class="sub">Securely manage your credentials</div>
+    <div class="actions">
+      <a href="WEB-PA~1/SIGN-I~1.HTM" class="btn" aria-label="Sign In" id="sign_in">
+        <img src="ASSETS/SIGN-IN.SVG" alt="Sign In Icon" width="32" height="32">
+        Sign In
+      </a>
+      <a href="WEB-PA~1/SIGN-U~1.HTM" class="btn" aria-label="Sign Up" id="sign_up">
+        <img src="ASSETS/SIGN-OUT.SVG" alt="Sign Up Icon" width="32" height="32">
+        Sign Up
+      </a>
+    </div>
+  </div>
+
+  <div id="themes" onclick="toggleTheme()" aria-label="Toggle theme">
+    <img id="moon" src="ASSETS/MOON.SVG" width="24" height="24" alt="Dark mode">
+    <img id="sun" src="ASSETS/SUN.SVG" width="24" height="24" alt="Light mode" style="display:none;">
+  </div>
+
+  <script>
+
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const dark = getComputedStyle(root).getPropertyValue('--bg').trim() === '#1f2128';
+      if(dark) {
+        root.style.setProperty('--bg','#f4f4f4');
+        root.style.setProperty('--card','#ffffff');
+        root.style.setProperty('--text','#333333');
+      } else {
+        root.style.setProperty('--bg','#1f2128');
+        root.style.setProperty('--card','#2b2e35');
+        root.style.setProperty('--text','#ececec');
+      }
+      document.getElementById('moon').style.display = dark ? 'none':'block';
+      document.getElementById('sun').style.display  = dark ? 'block':'none';
+    }
+
+  </script>
+</body>
+</html>

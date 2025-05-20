@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CipherSafe</title>
+  <link rel="icon" href="../ASSETS/FAVICON.ICO">
+  <style>
+    :root {
+      --font-family: 'Roboto', sans-serif;
+      --body-bg-color: #1e1e2f;
+      --container-bg: #2e2e3e;
+      --input-bg: #3a3a4a;
+      --input-placeholder: #b0b0c2;
+      --btn-primary: #5c6ac4;
+      --btn-primary-hover: #4b55a8;
+      --btn-accent: #28a745;
+      --btn-accent-hover: #218838;
+      --text-light: #f1f1f7;
+      --text-muted: #a0a0b2;
+      --toggle-bg: linear-gradient(135deg, #5c6ac4, #28a745);
+      --toggle-hover-bg: linear-gradient(135deg, #4b55a8, #218838);
+      --radius: 12px;
+      --transition: 0.3s ease;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
+    }
+    body {
+      background: var(--body-bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative;
+      color: var(--text-light);
+    }
+    .container {
+      background: var(--container-bg);
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      max-width: 360px;
+      width: 80%;
+      text-align: center;
+    }
+    .title {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+    }
+    .text-muted {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    a {
+      color: var(--btn-primary);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    a:hover {
+      color: var(--btn-primary-hover);
+      text-decoration: underline;
+    }
+    form {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .form-control {
+      background: var(--input-bg);
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      color: var(--text-light);
+      font-size: 1rem;
+      transition: background var(--transition);
+    }
+    .form-control::placeholder {
+      color: var(--input-placeholder);
+    }
+    .form-control:focus {
+      outline: 2px solid var(--btn-primary);
+      background: var(--container-bg);
+    }
+    .btn-submit {
+      background: var(--btn-accent);
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.75rem;
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition);
+      font-size: 1rem;
+    }
+    .btn-submit:hover {
+      background: var(--btn-accent-hover);
+    }
+    #themes {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      background: var(--toggle-bg);
+      padding: 0.5rem;
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    #themes:hover {
+      background: var(--toggle-hover-bg);
+      transform: scale(1.1);
+    }
+    #themes img {
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="title">New Archive</h2>
+    <form id="myForm" autocomplete="off" method="post">
+      <input type="text" name="archive" class="form-control" placeholder="Name" required>
+      <input type="password" name="password" class="form-control" placeholder="Password" required>
+      <button type="submit" class="btn-submit" id="btn-submit">Create</button>
+    </form>
+  </div>
+
+  <div id="themes">
+    <img src="../ASSETS/MOON.SVG" id="moon" alt="Dark Mode">
+    <img src="../ASSETS/SUN.SVG" id="sun" alt="Light Mode" style="display:none;">
+  </div>
+
+  <script>
+    let data_json = {};
+    // Recupera subito la username (o l’oggetto utente) in variabile esterna
+    if (sessionStorage.getItem('Username')) {
+      console.log("Bentornato " + sessionStorage.getItem('Username'));
+    } else {
+      console.warn("Nessun dato di login trovato");
+    }
+  
+    // Theme toggle (rimane identico)
+    const themesToggle = document.getElementById('themes');
+    const moonIcon     = document.getElementById('moon');
+    const sunIcon      = document.getElementById('sun');
+    themesToggle.addEventListener('click', () => {
+      const dark = document.body.classList.toggle('light-mode');
+      moonIcon.style.display = dark ? 'none' : 'block';
+      sunIcon.style.display  = dark ? 'block' : 'none';
+      const root = document.documentElement;
+      root.style.setProperty('--body-bg-color', dark ? '#f5f5f5' : '#1e1e2f');
+      root.style.setProperty('--container-bg',  dark ? '#ffffff' : '#2e2e3e');
+      root.style.setProperty('--input-bg',      dark ? '#eaeaea' : '#3a3a4a');
+      root.style.setProperty('--text-light',     dark ? '#333333' : '#f1f1f7');
+      root.style.setProperty('--btn-primary',    dark ? '#4b55a8' : '#5c6ac4');
+    });
+  
+    // Submit del form
+    document.getElementById("myForm").addEventListener("submit",async function(event) {
+      event.preventDefault();  
+      const form = document.querySelector("form");
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      if (!form.elements["archive"].value) {
+        alert("fill all the fields");
+        return; 
+      }
+
+      if (!form.elements["password"].value) {
+        alert("fill all the fields");
+        return; 
+      }
+  
+      // unisci form + author
+      data_json = {
+        ...data,
+        author: sessionStorage.getItem('Username')
+      };
+  
+      try {
+        const resp = await fetch("/new_archive", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify(data_json)
+        });
+        if (!resp.ok){
+          throw new Error(`HTTP ${resp.status}`);
+        }else{
+          const json = await resp.json();
+          if (json.status === "ok") {
+            alert("Archivio "+form.elements["archive"].value+" creato con successo");
+            console.log("Server response:", form.elements["archive"].value);
+            window.location.href = "/WEB-PA~1/ARCHIV~1.HTM";
+          }
+        }
+      } catch (err) {
+        alert("Errore di rete: " + err.message);
+      }
+    });
+    
+  </script>
+  
+</body>
+</html>

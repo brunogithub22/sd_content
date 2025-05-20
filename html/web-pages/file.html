@@ -1,0 +1,470 @@
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CipherSafe</title>
+  <link rel="icon" href="../ASSETS/FAVICON.ICO">
+  <style>
+    :root {
+      --font-family: 'Roboto', sans-serif;
+      --body-bg-color: #1e1e2f;
+      --container-bg: #2e2e3e;
+      --files-bg: #3a3a4a;
+      --btn-primary: #1abc9c;
+      --btn-primary-hover: #16a085;
+      --btn-accent: #00bcd4;
+      --btn-accent-hover: #0097a7;
+      --text-light: #f1f1f7;
+      --toggle-bg: linear-gradient(135deg, #5c6ac4, #00bcd4);
+      --toggle-hover-bg: linear-gradient(135deg, #4b55a8, #0097a7);
+      --radius: 12px;
+      --transition: 0.3s ease;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: var(--body-bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-light);
+    }
+    body {
+      min-height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 800px;
+      min-height: 80vh;
+      padding: 2rem;
+      background: var(--container-bg);
+      border-radius: var(--radius);
+    }
+    .files {
+      margin-bottom: 2.5rem;
+      background: var(--files-bg);
+      padding: 1rem;
+      border-radius: var(--radius);
+      width: 100%;
+      overflow-y: auto;
+      height: 60vh;
+    }
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--container-bg);
+      margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+    }
+    .file-name {
+      flex: 1;
+      text-align: left;
+    }
+    .file-actions {
+      gap: 0.5rem;
+    }
+    .file-actions button {
+      background: var(--btn-primary);
+      border: none;
+      padding: 0.5rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background var(--transition);
+      color: white;
+      font-size: 30px;
+    }
+    .file-actions button:hover {
+      background: var(--btn-primary-hover);
+    }
+    .side-buttons {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .side-buttons button {
+      width: 50px;
+      height: 50px;
+      background: var(--btn-accent);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 2rem;
+      color: white;
+      cursor: pointer;
+      transition: background var(--transition);
+      margin-left: 1rem;
+    }
+    .side-buttons div{
+      font-size: 1.5rem;
+    }
+    .side-buttons button:hover {
+      background: var(--btn-accent-hover);
+    }
+    #themes {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      background: var(--toggle-bg);
+      padding: 0.5rem;
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    #themes:hover {
+      background: var(--toggle-hover-bg);
+      transform: scale(1.1);
+    }
+    #themes img {
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
+    #progressBar { 
+      width: 100%; 
+      height: 1rem; 
+      margin-top: 1rem; 
+      margin-bottom: 1rem; 
+      appearance: none; 
+      display: none;
+      border-radius: 8px; 
+      overflow: hidden; }
+    #progressBar::-webkit-progress-bar { background: #444; }
+    #progressBar::-webkit-progress-value { background: #1abc9c; }
+    #downloadStatus{
+      display:none; 
+      position:fixed; 
+      top:1rem; 
+      left:50%; 
+      transform:translateX(-50%);
+      background:rgba(0,0,0,0.8); 
+      color:white; 
+      padding:0.5rem 1rem;
+      border-radius:8px; 
+      font-size:0.9rem;
+    }
+    #title{
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="title"><h2>File of <span id="username"></span></h2></div>
+    <div class="files" id="files" ></div>
+    <progress id="progressBar" value="0" max="100" ></progress>
+    <div id="downloadStatus">Download in corso…</div>
+    <div class="side-buttons">
+      <button title="Sign Out" type="button" id="sign_out">&#x23CF;</button>
+      <button title="Add" type="button" id="add">+</button>
+      <button title="Delete" type="button" id="delete_button">&#128465;</button>
+    </div>
+  </div>
+  <div id="themes">
+    <img src="../ASSETS/MOON.SVG" id="moon" alt="Dark Mode">
+    <img src="../ASSETS/SUN.SVG" id="sun" alt="Light Mode" style="display:none;">
+  </div>
+
+  <!-- Input file nascosto -->
+  <input type="file" id="fileInput" style="display:none;" />
+
+  <script>
+
+    let cont = 0;
+    let progressBar = document.getElementById("progressBar");
+    const themesToggle = document.getElementById('themes');
+    const moonIcon = document.getElementById('moon');
+    const sunIcon = document.getElementById('sun');
+    themesToggle.addEventListener('click', () => {
+      const dark = document.body.classList.toggle('light-mode');
+      moonIcon.style.display = dark ? 'none' : 'block';
+      sunIcon.style.display = dark ? 'block' : 'none';
+      document.documentElement.style.setProperty('--body-bg-color', dark ? '#f5f5f5' : '#1e1e2f');
+      document.documentElement.style.setProperty('--container-bg', dark ? '#ffffff' : '#2e2e3e');
+      document.documentElement.style.setProperty('--files-bg', dark ? '#eaeaea' : '#3a3a4a');
+      document.documentElement.style.setProperty('--text-light', dark ? '#333333' : '#f1f1f7');
+    });
+
+    function fetchJSONData() {
+      return fetch('/CIPHER~1/FILE~1.JSO')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.text();  // leggo come testo grezzo
+        })
+        .then(text => {
+          if (!text) {
+            // file vuoto: restituisco un oggetto di default
+            return { archives: [] };
+          }
+          return JSON.parse(text);  // evito il fallimento di response.json()
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById("username").textContent = sessionStorage.getItem('Username');
+      console.log("Username: "+sessionStorage.getItem('Username'));
+      console.log("Archivio: "+sessionStorage.getItem('Archive'));
+      console.log("Password: "+sessionStorage.getItem('Password'));
+      
+      if (sessionStorage.getItem('Username')) {
+        console.log("ciao "+sessionStorage.getItem('Username'));
+        let select = document.querySelector("select");
+        try {
+          fetchJSONData()
+            .then(data => {
+            data.archives.forEach(item => {
+              if(sessionStorage.getItem('Username') == item.author){
+                item.files.forEach(file =>{
+                  cont++;
+                  let file_item = document.createElement("div");
+                  file_item.classList.add("file-item");
+                  let file_name = document.createElement("div");
+                  file_name.classList.add("file-name");
+                  file_name.textContent = file.filename;
+                  let file_action = document.createElement("div");
+                  file_action.classList.add("file-actions");
+                  let button_dowload = document.createElement("button");
+                  let button_delete = document.createElement("button");
+                  button_dowload.title = "Download";
+                  button_dowload.classList.add("download");
+                  button_delete.title = "Delete";
+                  button_delete.classList.add("delete");
+                  button_dowload.textContent = "⬇️";
+                  button_dowload.addEventListener('click', async () => {
+                    const fileItem = button_dowload.closest('.file-item');
+                    const name = fileItem.querySelector('.file-name').textContent;
+                    console.log('Download clicked for:', name);
+                    const statusEl = document.getElementById('downloadStatus');
+                    statusEl.style.display = 'block';    
+                    try {
+                      const resp = await fetch("/download", {
+                        method:  "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body:    JSON.stringify({filename: name,password: sessionStorage.getItem('Password'),author:sessionStorage.getItem('Username'),archive:sessionStorage.getItem('Archive')})
+                      });
+                      if (!resp.ok){
+                        throw new Error(`HTTP ${resp.status}`);
+                      }
+                      else{
+                        const blob = await resp.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download    = name;   
+                        a.style.display = 'none';
+                        document.body.appendChild(a);
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                      }   
+                    }catch (err) {
+                      alert("Errore di rete: " + err.message);
+                    } finally {
+                      statusEl.style.display = 'none';     // → nascondi sempre
+                    }
+                  });
+                  button_delete.style.marginRight = "10px";
+                  button_dowload.style.marginRight = "10px";
+                  button_delete.textContent  = "🗑️";
+                  button_delete.addEventListener('click', async () => {
+                    const fileItem = button_delete.closest('.file-item');
+                    const name = fileItem.querySelector('.file-name').textContent;
+                    const proceed = window.confirm(`Sei sicuro di voler eliminare "${name}"?`);
+                    if (!proceed) {
+                      return; 
+                    }
+                    console.log('Delete clicked for:', name);
+                    try {
+                      const resp = await fetch("/delete", {
+                        method:  "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body:    JSON.stringify({filename: name,password: sessionStorage.getItem('Password'),author:sessionStorage.getItem('Username'),archive:sessionStorage.getItem('Archive')})
+                      });
+                      if (!resp.ok){
+                        throw new Error(`HTTP ${resp.status}`);
+                      }
+                      else{
+                        if(resp.status === 200){
+                          alert("file: "+name+" eliminato");
+                          window.location.reload();
+                        }
+                      }  
+                    } catch (err) {
+                      alert("Errore di rete: " + err.message);
+                    }  
+                  });
+                  file_action.appendChild(button_delete);
+                  file_action.appendChild(button_dowload);
+                  file_item.appendChild(file_name);
+                  file_item.appendChild(file_action);
+                  document.getElementById("files").appendChild(file_item);
+                });
+              }
+            });
+            if(cont === 0){
+              let text = document.createElement("p");
+              text.textContent = "Inserisci un file!!";
+              text.style.fontSize = "1.5rem";
+              document.getElementById("files").appendChild(text);        
+              document.getElementById("files").style.display = "flex";
+              document.getElementById("files").style.justifyContent = "center";
+              document.getElementById("files").style.alignItems = "center";
+            }
+          })
+          .catch(err => {
+            // qui gestisci eventuali errori di fetch o parsing
+            console.log("errore");
+          });         
+          } catch (e) {
+            console.error('Impossibile caricare JSON:', e);
+          }
+        } else {
+          console.warn("Nessun dato di login trovato");
+      }
+    });
+
+    const CHUNK_SIZE = 1 * 1024 * 1024; // Blob.prototype.slice è lazy e non duplica l'intero file in RAM :contentReference[oaicite:0]{index=0}
+
+    // 2) Hand-shake iniziale: invio unico dei metadati e calcolo dei totalChunks
+    async function startUploadSession(file, metadata) {
+      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+      const payload = {
+        filename:    file.name,
+        totalChunks,                // serve al server per validare e pulire
+        password:    metadata.password,
+        archive:     metadata.archive,
+        author:      metadata.author
+      };
+
+      const resp = await fetch('/upload_start', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' }, // JSON.stringify imposta la stringa JSON :contentReference[oaicite:1]{index=1}
+        body:    JSON.stringify(payload)                  // JSON.stringify serializza i metadati :contentReference[oaicite:2]{index=2}
+      });
+      if (!resp.ok) throw new Error("start_upload HTTP ${resp.status}");
+      const { uploadId } = await resp.json();
+      return uploadId;                                     // restituirà la sessione unica :contentReference[oaicite:3]{index=3}
+    }
+
+    // 3) Funzione che invia tutti i chunk con header minimali
+    async function uploadChunks(file, uploadId) {
+      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+      progressBar.style.display = 'block';
+      progressBar.value = 0;
+
+      for (let i = 0; i < totalChunks; i++) {
+        const start = i * CHUNK_SIZE;
+        const chunk = file.slice(start, start + CHUNK_SIZE);
+
+        await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+
+          // 1) Apri la request
+          xhr.open('POST', '/upload_chunk');
+
+          // 2) Imposta TUTTI i header PRIMA di send()
+          xhr.setRequestHeader('X-Upload-Id',    uploadId);
+          xhr.setRequestHeader('X-Chunk-Index',  String(i));
+          xhr.setRequestHeader('X-Total-Chunks', String(totalChunks));
+          xhr.setRequestHeader('X-Chunk-Size',   String(chunk.size));
+          xhr.setRequestHeader('Content-Type',   'application/octet-stream');
+
+          // 3) Registra gli handler di progresso e completamento
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const chunkProgress  = (e.loaded / e.total) * (1 / totalChunks) * 100;
+              const previousChunks = (i / totalChunks) * 100;
+              progressBar.value = previousChunks + chunkProgress;
+            }
+          };
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve();
+            } else {
+              reject(new Error(`Chunk ${i} failed: HTTP ${xhr.status}`));
+          }
+          };
+          xhr.onerror = () => reject(new Error(`Chunk ${i} failed: network error`));
+
+          // 4) Ora invia il chunk
+          xhr.send(chunk);
+        });
+        console.log(`Chunk ${i+1}/${totalChunks} inviato`);
+      }
+
+      console.log('Upload completato!');
+      progressBar.style.display = 'none';
+    }  
+
+    // 4) Inizializzazione UI e gestione eventi
+    document.getElementById("add").addEventListener("click", () => {
+      const inp = document.getElementById("fileInput");
+      inp.value = '';               // reset del valore per ri-selezione stesso file :contentReference[oaicite:6]{index=6}
+      inp.click();
+    });
+
+    document.getElementById("fileInput").addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return alert('Nessun file selezionato');
+
+      // Metadati presi da sessionStorage: Password, Archive, Username :contentReference[oaicite:7]{index=7}
+      const metadata = {
+        password: sessionStorage.getItem('Password'),
+        archive:  sessionStorage.getItem('Archive'),
+        author:   sessionStorage.getItem('Username')
+      };
+
+      try {
+        const uploadId = await startUploadSession(file, metadata);
+        await uploadChunks(file, uploadId);
+        alert('File caricato con successo!');
+        window.location.reload();
+      } catch (err) {
+        console.error(err);
+        alert('Errore durante l\'upload: ' + err.message);
+      }
+    });
+
+    document.getElementById("sign_out").addEventListener("click",()=>{
+      sessionStorage.removeItem('Password');
+      sessionStorage.removeItem('Archive');
+      window.location.href = "/WEB-PA~1/ARCHIV~1.HTM";
+    });
+
+    document.getElementById("delete_button").addEventListener("click",async ()=>{
+      const check = window.confirm(`Sei sicuro di voler eliminare "${sessionStorage.getItem('Archive')}"?`);
+      if (!check) {
+        return; 
+      }
+      try {
+        const response = await fetch("/delete_archive", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({username:sessionStorage.getItem('Username'),archive:sessionStorage.getItem('Archive')})
+        });
+        const json = await response.json();
+        if (json.status === "ok") {
+          alert(`l'archivio ${sessionStorage.getItem('Archive')} è stato eliminato!`);
+          window.location.href = "/WEB-PA~1/ARCHIV~1.HTM";
+        } else {
+          alert("delete fallita: ");
+        }
+      } catch (err) {
+        alert("Errore di rete: " + err.message);
+      }
+    })
+
+  </script>
+</body>
+</html> 

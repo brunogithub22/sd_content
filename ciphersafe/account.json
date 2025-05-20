@@ -1,0 +1,15 @@
+{
+	"accounts":	[{
+			"username":	"b_g",
+			"name":	"bruno",
+			"surname":	"galluzzo",
+			"password":	"4525685f7c50238753a0bb2674edb7f0f769dee88d621a7ee1f616a08067bc7d",
+			"email":	"bruno.galluzzo6@gmail.com"
+		}, {
+			"username":	"paolos",
+			"name":	"paolo",
+			"surname":	"senatore",
+			"email":	"lucascuola12345@gmail.com",
+			"password":	"b133a0c0e9bee3be20163d2ad31d6248db292aa6dcb1ee087a2aa50e0fc75ae2"
+		}]
+}

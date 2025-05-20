@@ -1,0 +1,19 @@
+{
+	"archives":	[{
+			"archive":	"file",
+			"password":	"ea31ac1d48d1880bfd2b4179f5da29f202f5daf778715f1aeb3a1f06149941a2",
+			"author":	"b_g",
+			"name_fat":	"FILE",
+			"files":	[{
+					"filename":	"due.jpeg"
+				}]
+		}, {
+			"archive":	"miei file",
+			"password":	"bdd2d3af3a5a1213497d4f1f7bfcda898274fe9cb5401bbc0190885664708fc2",
+			"author":	"paolos",
+			"name_fat":	"MIEIFI~1",
+			"files":	[{
+					"filename":	"Schermata_del_2025-02-07_21-40-20.png"
+				}]
+		}]
+}
